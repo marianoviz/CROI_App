@@ -1,10 +1,13 @@
 library(shiny)
+library(rhandsontable)
+library(shinyWidgets)
+library(tidyverse)
 
 ui <- fluidPage(
   
   tabsetPanel(
     id = "CROI_tabs",
-    type = "hidden",
+    #type = "hidden",
     
     ###
     tabPanel(
@@ -140,9 +143,37 @@ ui <- fluidPage(
       "outcomes1",
       
       h1("Outcomes"),
-      p("Specify the main outcome of the project"),
-      p("Are there any additional outcomes you want to add? (select up to 2 additional outcomes)"),
-      p("Add table"),
+      p("Specify the Main Outcome of the project"),
+      #p("Are there any additional outcomes you want to add? (select up to 2 additional outcomes)"),
+      
+      ##
+      textInput("main_outcome", label = h3("Main Outcome"), value = "Enter text..."),
+      textInput("outcome_indicator", label = h5("Outcome Indicator"), value = "Enter text..."),
+      textInput("units", label = h5("Units"), value = "Enter text..."),
+      
+      airDatepickerInput("start",
+                         label = "Start",
+                         value = "2022",
+                         maxDate = "2050",
+                         minDate = "1900",
+                         view = "years", 
+                         minView = "years", 
+                         dateFormat = "yyyy"
+      ),
+      
+      airDatepickerInput("finish",
+                         label = "Finish",
+                         value = "2022",
+                         maxDate = "2300",
+                         minDate = "1900",
+                         view = "years", 
+                         minView = "years", 
+                         dateFormat = "yyyy"
+      ),
+      
+      ##
+      
+      #p("Add table"),
       actionButton(
         inputId = "back_7",
         label = "Back"
@@ -159,8 +190,20 @@ ui <- fluidPage(
       "outcomes2",
       
       h1("Outcomes"),
-      p("When does each outcome start?"),
-      p("Add table"),
+      #p("When does each outcome start?"),
+      #p("Add table"),
+     
+      ##
+      
+      #helpText(verbatimTextOutput("value")),
+      rHandsontableOutput("table"),
+      br(),
+      actionButton("saveBtn","Save"),
+      br(),
+      br(),
+      ##
+      
+      
       actionButton(
         inputId = "back_8",
         label = "Back"
@@ -177,16 +220,26 @@ ui <- fluidPage(
       "outcomes3",
       
       h1("Outcomes"),
-      p("What is the expected duration of each outcome?"),
-      p("Add table"),
+      p("Are there any additional outcomes you would like to add? (you can specify up to 2 additional outcomes)"),
+      actionButton(
+        inputId = "yes_add",
+        label = "Yes"
+      ),
+      actionButton(
+        inputId = "no_add",
+        label = "No"
+      ),
+      br(),
+      br(),
+      br(),
       actionButton(
         inputId = "back_9",
         label = "Back"
-      ),
-      actionButton(
-        inputId = "next_9",
-        label = "Next"
       )
+      #actionButton(
+        #inputId = "next_9",
+        #label = "Next"
+      #)
     
     ),
     
@@ -196,7 +249,36 @@ ui <- fluidPage(
       
       h1("Outcomes"),
       p("Choose one indicator for each of the outcomes"),
-      p("Add table"),
+      
+      ##
+      
+      textInput("add_outcome1", label = h3("Additional Outcome #1"), value = "Enter text..."),
+      textInput("outcome_indicator1", label = h5("Outcome Indicator"), value = "Enter text..."),
+      textInput("units1", label = h5("Units"), value = "Enter text..."),
+      
+      airDatepickerInput("start1",
+                         label = "Start",
+                         value = "2022",
+                         maxDate = "2050",
+                         minDate = "1900",
+                         view = "years", 
+                         minView = "years", 
+                         dateFormat = "yyyy"
+      ),
+      
+      airDatepickerInput("finish1",
+                         label = "Finish",
+                         value = "2022",
+                         maxDate = "2300",
+                         minDate = "1900",
+                         view = "years", 
+                         minView = "years", 
+                         dateFormat = "yyyy"
+      ),
+      
+      ##
+      
+      
       actionButton(
         inputId = "back_10",
         label = "Back"
@@ -215,18 +297,118 @@ ui <- fluidPage(
       h1("Outcomes"),
       p("What is the measured/predicted value of each outcome indicator?"),
       p("Add table"),
+      
+      ##
+      #helpText(verbatimTextOutput("value")),
+      rHandsontableOutput("table1"),
+      br(),
+      actionButton("save_add_out1","Save"),
+      br(),
+      br(),
+      
+      
+      
+      ##
+      actionButton(
+        inputId = "add_other",
+        label = "Add a second Additional Outcome"
+      ),
+      actionButton(
+        inputId = "no_add_other",
+        label = "Continue without adding a second Additional Outcome"
+      ),
+      br(),
+      br(),
+      br(),
       actionButton(
         inputId = "back_11",
         label = "Back"
       ),
-      actionButton(
-        inputId = "next_11",
-        label = "Next"
-      )
+      #actionButton(
+        #inputId = "next_11",
+        #label = "Next"
+      #)
     
     ),
     
     ###
+    tabPanel(
+      "outcomesx",
+      
+      h1("Outcomes"),
+      p("x"),
+      
+      ##
+      
+      textInput("add_outcome2", label = h3("Additional Outcome #2"), value = "Enter text..."),
+      textInput("outcome_indicator2", label = h5("Outcome Indicator"), value = "Enter text..."),
+      textInput("units2", label = h5("Units"), value = "Enter text..."),
+      
+      airDatepickerInput("start2",
+                         label = "Start",
+                         value = "2022",
+                         maxDate = "2050",
+                         minDate = "1900",
+                         view = "years", 
+                         minView = "years", 
+                         dateFormat = "yyyy"
+      ),
+      
+      airDatepickerInput("finish2",
+                         label = "Finish",
+                         value = "2022",
+                         maxDate = "2300",
+                         minDate = "1900",
+                         view = "years", 
+                         minView = "years", 
+                         dateFormat = "yyyy"
+      ),
+      
+      ##
+      
+      actionButton(
+        inputId = "back_x",
+        label = "Back"
+      ),
+      actionButton(
+        inputId = "next_x",
+        label = "Next"
+      )
+      
+    ),
+    
+    ###
+    
+    tabPanel(
+      "outcomesxx",
+      
+      h1("Outcomes"),
+      p("xx"),
+      
+      ##
+      #helpText(verbatimTextOutput("value")),
+      rHandsontableOutput("table2"),
+      br(),
+      actionButton("save_add_out2","Save"),
+      br(),
+      br(),
+      
+      
+      
+      ##
+      
+      actionButton(
+        inputId = "back_xx",
+        label = "Back"
+      ),
+      actionButton(
+        inputId = "next_xx",
+        label = "Next"
+      )
+      
+    ),
+    
+    
     tabPanel(
       "outcomes6",
       
@@ -253,7 +435,11 @@ ui <- fluidPage(
       p("Add checkbox"),
       
       p("What is the monetized value per unit of the selected outcome?"),
-      p("Add table"),
+      rHandsontableOutput("table3"),
+      br(),
+      actionButton("save_mon_value","Save"),
+      br(),
+      br(),
       actionButton(
         inputId = "back_13",
         label = "Back"
@@ -457,6 +643,134 @@ ui <- fluidPage(
 
 server <- function(input, output, session) {
   
+  ##
+  
+  result <- eventReactive(input$next_7 , {
+    st <- as.numeric(format(as.Date(input$start, format="%Y/%m/%Yd"),"%Y"))
+    fn <- as.numeric(format(as.Date(input$finish, format="%Y/%m/%Yd"),"%Y"))
+    x <- (fn - st) + 1
+    foo<-data.frame(matrix(ncol=3, nrow=x))
+    colnames(foo)<-c('Year', 'a', 'Units')
+    foo$a<-as.numeric(NA)
+    foo$Year<-c(st:fn)
+    colnames(foo)[2] <- input$outcome_indicator
+    foo$Units <- input$units
+    return(foo)
+  })
+  
+  
+  # returns rhandsontable type object - editable excel type grid data
+  output$table <- renderRHandsontable({
+    rhandsontable(result()) # converts the R dataframe to rhandsontable object
+  })
+  
+  # on click of button the file will be saved to the working directory
+  observeEvent(input$saveBtn, 
+               write.csv(hot_to_r(input$table), file = "main_outcome.csv",row.names = FALSE))
+  # hot_to_r() converts the rhandsontable object to r data object
+  
+  ##
+  
+  result1 <- eventReactive(input$next_10 , {
+    st1 <- as.numeric(format(as.Date(input$start1, format="%Y/%m/%Yd"),"%Y"))
+    fn1 <- as.numeric(format(as.Date(input$finish1, format="%Y/%m/%Yd"),"%Y"))
+    x1 <- (fn1 - st1) + 1
+    foo<-data.frame(matrix(ncol=3, nrow=x1))
+    colnames(foo)<-c('Year', 'a', 'Units')
+    foo$a<-as.numeric(NA)
+    foo$Year<-c(st1:fn1)
+    colnames(foo)[2] <- input$outcome_indicator1
+    foo$Units <- input$units1
+    return(foo)
+  })
+  
+  
+  # returns rhandsontable type object - editable excel type grid data
+  output$table1 <- renderRHandsontable({
+    rhandsontable(result1()) # converts the R dataframe to rhandsontable object
+  })
+  
+  # on click of button the file will be saved to the working directory
+  observeEvent(input$save_add_out1, 
+               write.csv(hot_to_r(input$table1), file = "add_outcome1.csv",row.names = FALSE))
+  # hot_to_r() converts the rhandsontable object to r data object
+  
+  ##
+  result2 <- eventReactive(input$next_x , {
+    st2 <- as.numeric(format(as.Date(input$start2, format="%Y/%m/%Yd"),"%Y"))
+    fn2 <- as.numeric(format(as.Date(input$finish2, format="%Y/%m/%Yd"),"%Y"))
+    x2 <- (fn2 - st2) + 1
+    foo<-data.frame(matrix(ncol=3, nrow=x2))
+    colnames(foo)<-c('Year', 'a', 'Units')
+    foo$a<-as.numeric(NA)
+    foo$Year<-c(st2:fn2)
+    colnames(foo)[2] <- input$outcome_indicator2
+    foo$Units <- input$units2
+    return(foo)
+  })
+  
+  
+  output$table2 <- renderRHandsontable({
+    rhandsontable(result2()) 
+  })
+  
+  
+  observeEvent(input$save_add_out2, 
+               write.csv(hot_to_r(input$table2), file = "add_outcome2.csv",row.names = FALSE))
+
+  
+  ##
+  #ESTO NO ANDA! RE-PENSARLO!!!
+
+  result3 <- eventReactive(input$next_xx , {
+    foo<-data.frame(matrix(ncol=2, nrow=3))
+    colnames(foo)<-c('Value', 'Units')
+    row.names(foo)[1] <- input$outcome_indicator
+    row.names(foo)[2] <- input$outcome_indicator1
+    row.names(foo)[3] <- input$outcome_indicator2
+    foo$Value <- as.numeric(NA)
+    foo$Units[1] <- input$units
+    foo$Units[2] <- input$units1
+    foo$Units[3] <- input$units2
+    return(foo)
+  })
+  
+  result3 <- eventReactive(input$no_add_other , {
+    foo<-data.frame(matrix(ncol=2, nrow=2))
+    colnames(foo)<-c('Value', 'Units')
+    row.names(foo)[1] <- input$outcome_indicator
+    row.names(foo)[2] <- input$outcome_indicator1
+    foo$Value <- as.numeric(NA)
+    foo$Units[1] <- input$units
+    foo$Units[2] <- input$units1
+    return(foo)
+  })
+  
+  result3 <- eventReactive(input$no_add , {
+    foo<-data.frame(matrix(ncol=2, nrow=1))
+    colnames(foo)<-c('Value', 'Units')
+    row.names(foo)[1] <- input$outcome_indicator
+    foo$Value <- as.numeric(NA)
+    foo$Units[1] <- input$units
+    return(foo)
+  })
+  
+  
+  output$table3 <- renderRHandsontable({
+    rhandsontable(result3()) 
+  })
+  
+  
+  observeEvent(input$save_mon_value, 
+               write.csv(hot_to_r(input$table2), file = "mon_value.csv",row.names = FALSE))
+  
+  ##
+  
+  
+  
+  
+  
+  
   observeEvent(input$continue,{
     message("continue button was press")
     updateTabsetPanel(session, "CROI_tabs", selected = "intro")
@@ -547,15 +861,25 @@ server <- function(input, output, session) {
     updateTabsetPanel(session, "CROI_tabs", selected = "outcomes3")
   })
   
+  observeEvent(input$yes_add,{
+    message("Yes (add additional outcome) button was press")
+    updateTabsetPanel(session, "CROI_tabs", selected = "outcomes4")
+  })
+  
+  observeEvent(input$no_add,{
+    message("No (add additional outcome) button was press")
+    updateTabsetPanel(session, "CROI_tabs", selected = "outcomes6")
+  })
+  
   observeEvent(input$back_9,{
     message("Back (9) button was press")
     updateTabsetPanel(session, "CROI_tabs", selected = "outcomes2")
   })
   
-  observeEvent(input$next_9,{
-    message("Next (9) button was press")
-    updateTabsetPanel(session, "CROI_tabs", selected = "outcomes4")
-  })
+  #observeEvent(input$next_9,{
+    #message("Next (9) button was press")
+    #updateTabsetPanel(session, "CROI_tabs", selected = "outcomes4")
+  #})
   
   observeEvent(input$back_10,{
     message("Back (10) button was press")
@@ -565,6 +889,40 @@ server <- function(input, output, session) {
   observeEvent(input$next_10,{
     message("Next (10) button was press")
     updateTabsetPanel(session, "CROI_tabs", selected = "outcomes5")
+  })
+  
+  observeEvent(input$add_other,{
+    message("Add a second additional outcome button was press")
+    updateTabsetPanel(session, "CROI_tabs", selected = "outcomesx")
+  })
+  
+  observeEvent(input$no_add_other,{
+    message("Continue without adding a second additional outcome button was press")
+    updateTabsetPanel(session, "CROI_tabs", selected = "outcomes6")
+  })
+  
+  observeEvent(input$back_x,{
+    message("Back (X) button was press")
+    updateTabsetPanel(session, "CROI_tabs", selected = "outcomes5")
+  })
+  
+  observeEvent(input$next_x,{
+    message("Next (X) button was press")
+    updateTabsetPanel(session, "CROI_tabs", selected = "outcomesxx")
+  })
+  observeEvent(input$back_xx,{
+    message("Back (XX) button was press")
+    updateTabsetPanel(session, "CROI_tabs", selected = "outcomesx")
+  })
+  
+  observeEvent(input$next_xx,{
+    message("Next (XX) button was press")
+    updateTabsetPanel(session, "CROI_tabs", selected = "outcomes6")
+  })
+  
+  observeEvent(input$next_11,{
+    message("Next (11) button was press")
+    updateTabsetPanel(session, "CROI_tabs", selected = "outcomes6")
   })
   
   observeEvent(input$back_11,{
@@ -579,7 +937,7 @@ server <- function(input, output, session) {
   
   observeEvent(input$back_12,{
     message("Back (12) button was press")
-    updateTabsetPanel(session, "CROI_tabs", selected = "outcomes5")
+    updateTabsetPanel(session, "CROI_tabs", selected = "outcomes3")
   })
   
   observeEvent(input$next_12,{
