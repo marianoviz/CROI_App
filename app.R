@@ -7,7 +7,7 @@ ui <- fluidPage(
   
   tabsetPanel(
     id = "CROI_tabs",
-    #type = "hidden",
+    type = "hidden",
     
     ###
     tabPanel(
@@ -71,7 +71,29 @@ ui <- fluidPage(
       "general",
       
       h1("General"),
-      p("Add text boxes"),
+      textInput("organization", label = h3("Organization"), value = "Enter text..."),
+      textInput("program", label = h3("Program/Project"), value = "Enter text..."),
+      textInput("goal", label = h3("Goal"), value = "Enter text..."),
+      h3("Investment Period"),
+      airDatepickerInput("from",
+                         label = "From",
+                         value = "2022",
+                         maxDate = "2050",
+                         minDate = "1900",
+                         view = "years", 
+                         minView = "years", 
+                         dateFormat = "yyyy"
+      ),
+      
+      airDatepickerInput("to",
+                         label = "To",
+                         value = "2022",
+                         maxDate = "2300",
+                         minDate = "1900",
+                         view = "years", 
+                         minView = "years", 
+                         dateFormat = "yyyy"
+      ),
       actionButton(
         inputId = "back_3",
         label = "Back"
@@ -88,8 +110,11 @@ ui <- fluidPage(
       "inputs",
       
       h1("Inputs"),
-      p("Which costs will you consider in the analysis?"),
-      p("Add checkbox"),
+      #h5("Which costs will you consider in the analysis?"),
+      checkboxGroupInput("costs", label = h4("Which costs will you consider in the analysis?"), 
+                         choices = list("Direct" = 1, "Indirect" = 2),
+                         selected = 1),
+      br(),
       actionButton(
         inputId = "back_4",
         label = "Back"
@@ -106,8 +131,12 @@ ui <- fluidPage(
       "inputs1",
       
       h1("Inputs"),
-      p("List all significant costs incurred on the project"),
-      p("Add table"),
+      h4("List all significant costs incurred on the project"),
+      rHandsontableOutput("table0"),
+      br(),
+      actionButton("save_inputs","Save"),
+      br(),
+      br(),
       actionButton(
         inputId = "back_5",
         label = "Back"
@@ -125,8 +154,11 @@ ui <- fluidPage(
       
     h1("Outcomes"),
     img(src = "outcomes.png", height = "50%", width = "50%"),
-    p("What outcomes will be taken into account?"),
-    p("Add checkbox"),
+    br(),
+    checkboxGroupInput("outcomes_opt", label = h4("What outcomes will be taken into account?"), 
+                       choices = list("Intended" = 1, "Unintended" = 2),
+                       selected = 1),
+    br(),
     actionButton(
       inputId = "back_6",
       label = "Back"
@@ -143,7 +175,7 @@ ui <- fluidPage(
       "outcomes1",
       
       h1("Outcomes"),
-      p("Specify the Main Outcome of the project"),
+      h4("Specify the Main Outcome of the project"),
       #p("Are there any additional outcomes you want to add? (select up to 2 additional outcomes)"),
       
       ##
@@ -190,6 +222,7 @@ ui <- fluidPage(
       "outcomes2",
       
       h1("Outcomes"),
+      h4("Fill in the outcome data"),
       #p("When does each outcome start?"),
       #p("Add table"),
      
@@ -220,7 +253,7 @@ ui <- fluidPage(
       "outcomes3",
       
       h1("Outcomes"),
-      p("Are there any additional outcomes you would like to add? (you can specify up to 2 additional outcomes)"),
+      h4("Are there any additional outcomes you would like to add? (you can specify up to 2 additional outcomes)"),
       actionButton(
         inputId = "yes_add",
         label = "Yes"
@@ -248,7 +281,7 @@ ui <- fluidPage(
       "outcomes4",
       
       h1("Outcomes"),
-      p("Choose one indicator for each of the outcomes"),
+      #p("Choose one indicator for each of the outcomes"),
       
       ##
       
@@ -295,8 +328,9 @@ ui <- fluidPage(
       "outcomes5",
       
       h1("Outcomes"),
-      p("What is the measured/predicted value of each outcome indicator?"),
-      p("Add table"),
+      h4("Fill in the outcome data"),
+      #p("What is the measured/predicted value of each outcome indicator?"),
+      #p("Add table"),
       
       ##
       #helpText(verbatimTextOutput("value")),
@@ -323,7 +357,7 @@ ui <- fluidPage(
       actionButton(
         inputId = "back_11",
         label = "Back"
-      ),
+      )
       #actionButton(
         #inputId = "next_11",
         #label = "Next"
@@ -336,7 +370,7 @@ ui <- fluidPage(
       "outcomesx",
       
       h1("Outcomes"),
-      p("x"),
+      #p("x"),
       
       ##
       
@@ -383,7 +417,8 @@ ui <- fluidPage(
       "outcomesxx",
       
       h1("Outcomes"),
-      p("xx"),
+      h4("Fill in the outcome data"),
+      #p("xx"),
       
       ##
       #helpText(verbatimTextOutput("value")),
@@ -413,16 +448,27 @@ ui <- fluidPage(
       "outcomes6",
       
       h1("Outcomes"),
-      p("Will any of the outcomes be valued in monetary equivalents?"),
-      p("Add checkbox"),
+      h4("Will any of the outcomes be valued in monetary equivalents?"),
+      actionButton(
+        inputId = "yes_mon",
+        label = "Yes"
+      ),
+      actionButton(
+        inputId = "no_mon",
+        label = "No"
+      ),
+      br(),
+      br(),
+      br(),
+      
       actionButton(
         inputId = "back_12",
         label = "Back"
-      ),
-      actionButton(
-        inputId = "next_12",
-        label = "Next"
       )
+      #actionButton(
+        #inputId = "next_12",
+        #label = "Next"
+      #)
     
     ),
     
@@ -431,10 +477,10 @@ ui <- fluidPage(
       "outcomes7",
       
       h1("Outcomes"),
-      p("Select the outcome(s) to be valued in monetary equivalents:"),
-      p("Add checkbox"),
+      #p("Select the outcome(s) to be valued in monetary equivalents:"),
+      #p("Add checkbox"),
       
-      p("What is the monetized value per unit of the selected outcome?"),
+      h4("What is the value (per unit) of the monetized outcome?"),
       rHandsontableOutput("table3"),
       br(),
       actionButton("save_mon_value","Save"),
@@ -456,8 +502,8 @@ ui <- fluidPage(
       "outcomes8",
       
       h1("Outcomes"),
-      p("What will be the discount rate used to calculate the present value of the outcomes?"),
-      p("Add text box"),
+      
+      textInput("dr", label = h4("What will be the discount rate used to calculate the present value of the outcomes?"), value = "3.5%"),
       actionButton(
         inputId = "back_14",
         label = "Back"
@@ -474,7 +520,7 @@ ui <- fluidPage(
       "impact",
       
       h1("Impact"),
-      h4("Counterfactual"),
+      h3("Counterfactual"),
       p("Cool (and brief) explanation of additionality"),
       actionButton(
         inputId = "back_15",
@@ -492,9 +538,17 @@ ui <- fluidPage(
       "impact1",
       
     h1("Impact"),
-    h4("Counterfactual"),
-    p("What would have happened if the project had not been carried out?"),
-    p("Add table"),
+    h3("Counterfactual"),
+    h4("What would have happened if the project had not been carried out?"),
+    rHandsontableOutput("table4"),
+    br(),
+    rHandsontableOutput("table5"),
+    br(),
+    rHandsontableOutput("table6"),
+    br(),
+    actionButton("save_cf_main","Save"),
+    br(),
+    br(),
     actionButton(
       inputId = "back_16",
       label = "Back"
@@ -511,8 +565,8 @@ ui <- fluidPage(
       "impact2",
       
       h1("Impact"),
-      h4("Counterfactual"),
-      p("How was the baseline scenario assessed?"),
+      h3("Counterfactual"),
+      h4("How was the baseline scenario assessed?"),
       p("Add table"),
       actionButton(
         inputId = "back_17",
@@ -530,7 +584,7 @@ ui <- fluidPage(
       "impact3",
       
       h1("Impact"),
-      h4("Leakage"),
+      h3("Leakage"),
       p("Cool (and brief) explanation of leakage"),
       actionButton(
         inputId = "back_18",
@@ -548,8 +602,8 @@ ui <- fluidPage(
       "impact4",
         
       h1("Impact"),
-      h4("Leakage"),
-      p("What, if any, is the main source(s) of leakage for each outcome?"),
+      h3("Leakage"),
+      h4("What, if any, is the main source(s) of leakage for each outcome?"),
       p("Add table"),
       actionButton(
         inputId = "back_19",
@@ -567,8 +621,8 @@ ui <- fluidPage(
       "impact5",
       
       h1("Impact"),
-      h4("Leakage"),
-      p("What is the speculated intensity of each source of leakage?"),
+      h3("Leakage"),
+      h4("What is the speculated intensity of each source of leakage?"),
       p("Add table"),
       actionButton(
         inputId = "back_20",
@@ -586,8 +640,8 @@ ui <- fluidPage(
       "impact6",
       
       h1("Impact"),
-      h4("Attribution"),
-      p("How much of the outcomes was caused by the contribution of other organizations or people?"),
+      h3("Attribution"),
+      h4("How much of the outcomes was caused by the contribution of other organizations or people?"),
       p("Add table"),
       actionButton(
         inputId = "back_21",
@@ -633,7 +687,7 @@ ui <- fluidPage(
       label = "Home"
     )
     
-    ),
+    )
     
   )
   
@@ -642,6 +696,30 @@ ui <- fluidPage(
 )
 
 server <- function(input, output, session) {
+  
+  
+  ##
+  
+  result0 <- eventReactive(input$next_4 , {
+    foo<-data.frame(matrix(ncol=3, nrow=10))
+    colnames(foo)<-c('Resource', 'a', 'Year')
+    foo$a<-as.numeric(NA)
+    foo$Year<-as.numeric(NA)
+    foo$Resource<-as.character(NA) 
+    colnames(foo)[2] <- "Financial Value"
+    return(foo)
+  })
+  
+  
+  output$table0 <- renderRHandsontable({
+    rhandsontable(result0()) 
+  })
+  
+  
+  observeEvent(input$save_inputs, 
+               write.csv(hot_to_r(input$table0), file = "inputs.csv",row.names = FALSE))
+  
+  
   
   ##
   
@@ -720,54 +798,70 @@ server <- function(input, output, session) {
 
   
   ##
-  #ESTO NO ANDA! RE-PENSARLO!!!
 
-  result3 <- eventReactive(input$next_xx , {
-    foo<-data.frame(matrix(ncol=2, nrow=3))
-    colnames(foo)<-c('Value', 'Units')
-    row.names(foo)[1] <- input$outcome_indicator
-    row.names(foo)[2] <- input$outcome_indicator1
-    row.names(foo)[3] <- input$outcome_indicator2
+  result3 <- eventReactive(input$yes_mon , {
+    foo<-data.frame(matrix(ncol=3, nrow=3))
+    colnames(foo)<-c('Indicator', 'Units', 'Value')
+    foo$Indicator[1] <- input$outcome_indicator
+    foo$Indicator[2] <- input$outcome_indicator1
+    foo$Indicator[3] <- input$outcome_indicator2
     foo$Value <- as.numeric(NA)
     foo$Units[1] <- input$units
     foo$Units[2] <- input$units1
     foo$Units[3] <- input$units2
-    return(foo)
-  })
-  
-  result3 <- eventReactive(input$no_add_other , {
-    foo<-data.frame(matrix(ncol=2, nrow=2))
-    colnames(foo)<-c('Value', 'Units')
-    row.names(foo)[1] <- input$outcome_indicator
-    row.names(foo)[2] <- input$outcome_indicator1
-    foo$Value <- as.numeric(NA)
-    foo$Units[1] <- input$units
-    foo$Units[2] <- input$units1
-    return(foo)
-  })
-  
-  result3 <- eventReactive(input$no_add , {
-    foo<-data.frame(matrix(ncol=2, nrow=1))
-    colnames(foo)<-c('Value', 'Units')
-    row.names(foo)[1] <- input$outcome_indicator
-    foo$Value <- as.numeric(NA)
-    foo$Units[1] <- input$units
+    foo<- subset(foo, Units!="Enter text..." & Indicator!="Enter text...")
     return(foo)
   })
   
   
   output$table3 <- renderRHandsontable({
-    rhandsontable(result3()) 
+    rhandsontable(result3())
   })
   
-  
   observeEvent(input$save_mon_value, 
-               write.csv(hot_to_r(input$table2), file = "mon_value.csv",row.names = FALSE))
+               write.csv(hot_to_r(input$table3), file = "mon_value.csv",row.names = FALSE))
   
   ##
   
+  result4 <- eventReactive(input$saveBtn , {
+    foo<-read.csv("main_outcome.csv")
+    foo$Baseline<- as.numeric(NA)
+    return(foo)
+  })
   
   
+  output$table4 <- renderRHandsontable({
+    rhandsontable(result4())
+  })
+  
+  observeEvent(input$save_cf_main, 
+               write.csv(hot_to_r(input$table4), file = "save_cf_main.csv",row.names = FALSE))
+  
+  
+  
+  result5 <- eventReactive(input$save_add_out1 , {
+    foo<-read.csv("add_outcome1.csv")
+    foo$Baseline<- as.numeric(NA)
+    return(foo)
+  })
+  
+  
+  output$table5 <- renderRHandsontable({
+    rhandsontable(result5())
+  })
+  
+  
+  result6 <- eventReactive(input$save_add_out2 , {
+    foo<-read.csv("add_outcome2.csv")
+    foo$Baseline<- as.numeric(NA)
+    return(foo)
+  })
+  
+  
+  output$table6 <- renderRHandsontable({
+    rhandsontable(result6())
+  })
+  ##
   
   
   
@@ -935,15 +1029,25 @@ server <- function(input, output, session) {
     updateTabsetPanel(session, "CROI_tabs", selected = "outcomes6")
   })
   
+  observeEvent(input$yes_mon,{
+    message("Yes (monetary valuation) button was press")
+    updateTabsetPanel(session, "CROI_tabs", selected = "outcomes7")
+  })
+  
+  observeEvent(input$no_mon,{
+    message("No (monetary valuation) button was press")
+    updateTabsetPanel(session, "CROI_tabs", selected = "outcomes8")
+  })
+  
   observeEvent(input$back_12,{
     message("Back (12) button was press")
     updateTabsetPanel(session, "CROI_tabs", selected = "outcomes3")
   })
   
-  observeEvent(input$next_12,{
-    message("Next (12) button was press")
-    updateTabsetPanel(session, "CROI_tabs", selected = "outcomes7")
-  })
+  #observeEvent(input$next_12,{
+    #message("Next (12) button was press")
+    #updateTabsetPanel(session, "CROI_tabs", selected = "outcomes7")
+  #})
   
   
   observeEvent(input$back_13,{
