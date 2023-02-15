@@ -7,7 +7,7 @@ ui <- fluidPage(
   
   tabsetPanel(
     id = "CROI_tabs",
-    #type = "hidden",
+    type = "hidden",
     
     ###
     tabPanel(
@@ -877,18 +877,18 @@ ui <- fluidPage(
       
       sliderInput("slider1", label = h5("How much of the Main Outcomes was caused by the contribution of other organizations or people?"), min = 0, 
                   max = 100, value = 50),
-      h3("Present Value of Main Outcome:", textOutput("pv_main_at")),
-      br(),
+      h5("Present Value of Main Outcome:", textOutput("pv_main_at")),
+      hr(),
       
       #conditionalPanel(condition = "input.outcome_indicator1 != 'Enter text...' ", h3(textOutput("pv_add1"))),
       conditionalPanel(condition = "input.outcome_indicator1 != 'Enter text...' ", sliderInput("slider2", label = h5("How much of the Additional Outcomes #1 was caused by the contribution of other organizations or people?"), min = 0, 
                                                                                                max = 100, value = 50)),
-      conditionalPanel(condition = "input.outcome_indicator1 != 'Enter text...' ", h3("Present Value of Additional Outcome #1:", textOutput("pv_add1_at"))),
+      conditionalPanel(condition = "input.outcome_indicator1 != 'Enter text...' ", h5("Present Value of Additional Outcome #1:", textOutput("pv_add1_at"))),
       hr(),
       #conditionalPanel(condition = "input.outcome_indicator2 != 'Enter text...' ", h3(textOutput("pv_add2"))),
       conditionalPanel(condition = "input.outcome_indicator2 != 'Enter text...' ", sliderInput("slider3", label = h5("How much of the Additional Outcomes #2 was caused by the contribution of other organizations or people?"), min = 0, 
                                                                                                max = 100, value = 50)),
-      conditionalPanel(condition = "input.outcome_indicator2 != 'Enter text...' ", h3("Present Value of Additional Outcome #2:", textOutput("pv_add2_at"))),
+      conditionalPanel(condition = "input.outcome_indicator2 != 'Enter text...' ", h5("Present Value of Additional Outcome #2:", textOutput("pv_add2_at"))),
       br(),
       hr(),
       actionButton(
