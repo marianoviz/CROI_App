@@ -7,7 +7,7 @@ ui <- fluidPage(
   
   tabsetPanel(
     id = "CROI_tabs",
-    type = "hidden",
+    #type = "hidden",
     
     ###
     tabPanel(
@@ -73,27 +73,7 @@ ui <- fluidPage(
       h1("General"),
       textInput("organization", label = h3("Organization"), value = "Enter text..."),
       textInput("program", label = h3("Program/Project"), value = "Enter text..."),
-      textInput("goal", label = h3("Goal"), value = "Enter text..."),
-      h3("Investment Period"),
-      airDatepickerInput("from",
-                         label = "From",
-                         value = "2022",
-                         maxDate = "2050",
-                         minDate = "1900",
-                         view = "years", 
-                         minView = "years", 
-                         dateFormat = "yyyy"
-      ),
       
-      airDatepickerInput("to",
-                         label = "To",
-                         value = "2022",
-                         maxDate = "2300",
-                         minDate = "1900",
-                         view = "years", 
-                         minView = "years", 
-                         dateFormat = "yyyy"
-      ),
       actionButton(
         inputId = "back_3",
         label = "Back"
@@ -112,8 +92,8 @@ ui <- fluidPage(
       h1("Inputs"),
       #h5("Which costs will you consider in the analysis?"),
       checkboxGroupInput("costs", label = h4("Which costs will you consider in the analysis?"), 
-                         choices = list("Direct" = 1, "Indirect" = 2),
-                         selected = 1),
+                         choices = list("Direct" = "Direct", "Indirect" = "and Indirect"),
+                         selected = "Direct"),
       br(),
       actionButton(
         inputId = "back_4",
@@ -156,8 +136,8 @@ ui <- fluidPage(
     img(src = "outcomes.png", height = "50%", width = "50%"),
     br(),
     checkboxGroupInput("outcomes_opt", label = h4("What outcomes will be taken into account?"), 
-                       choices = list("Intended" = 1, "Unintended" = 2),
-                       selected = 1),
+                       choices = list("Intended" = "Intended", "Unintended" = "and Unintended"),
+                       selected = "Intended"),
     br(),
     actionButton(
       inputId = "back_6",
@@ -503,7 +483,7 @@ ui <- fluidPage(
       
       h1("Outcomes"),
       
-      textInput("dr", label = h4("What will be the discount rate used to calculate the present value of the outcomes?"), value = "3.5%"),
+      numericInput("dr", label = h4("What will be the discount rate (%) used to calculate the present value of the outcomes?"), value = 3.5),
       actionButton(
         inputId = "back_14",
         label = "Back"
@@ -538,17 +518,55 @@ ui <- fluidPage(
       "impact1",
       
     h1("Impact"),
-    h3("Counterfactual"),
+    h3("Baseline"),
     h4("What would have happened if the project had not been carried out?"),
     rHandsontableOutput("table4"),
-    br(),
-    rHandsontableOutput("table5"),
-    br(),
-    rHandsontableOutput("table6"),
-    br(),
     actionButton("save_cf_main","Save"),
     br(),
     br(),
+    conditionalPanel(condition = "input.outcome_indicator1 != 'Enter text...' ", rHandsontableOutput("table5")),
+    conditionalPanel(condition = "input.outcome_indicator1 != 'Enter text...' ", actionButton("save_cf_add1","Save")),
+    br(),
+    conditionalPanel(condition = "input.outcome_indicator2 != 'Enter text...' ", rHandsontableOutput("table6")),
+    conditionalPanel(condition = "input.outcome_indicator2 != 'Enter text...' ", actionButton("save_cf_add2","Save")),
+    br(),
+    hr(),
+    h3("Causal inference"),
+    h4("How was the baseline scenario assessed?"),
+    selectInput("ci_main", label = h5("Main Outcome"), 
+                choices = list("Randomized Controlled Trial" = "Randomized Controlled Trial", 
+                               "Regression discontinuity" = "Regression discontinuity", 
+                               "Differences in differences" = "Differences in differences",
+                               "Instrumental variables" = "Instrumental variables",
+                               "Synthetic control" = "Synthetic control",
+                               "Control site" = "Control site",
+                               "Before vs. After" = "Before vs. After",
+                               "Enrolled vs. Unenrolled" = "Enrolled vs. Unenrolled",
+                               "Other" = "Other"), 
+                selected = "Control site"),
+    conditionalPanel(condition = "input.outcome_indicator1 != 'Enter text...' ", selectInput("ci_add1", label = h5("Additional Outcome #1"), 
+                                                                                             choices = list("Randomized Controlled Trial" = "Randomized Controlled Trial", 
+                                                                                                            "Regression discontinuity" = "Regression discontinuity", 
+                                                                                                            "Differences in differences" = "Differences in differences",
+                                                                                                            "Instrumental variables" = "Instrumental variables",
+                                                                                                            "Synthetic control" = "Synthetic control",
+                                                                                                            "Control site" = "Control site",
+                                                                                                            "Before vs. After" = "Before vs. After",
+                                                                                                            "Enrolled vs. Unenrolled" = "Enrolled vs. Unenrolled",
+                                                                                                            "Other" = "Other"), 
+                                                                                             selected = "Control site")),
+    conditionalPanel(condition = "input.outcome_indicator2 != 'Enter text...' ", selectInput("ci_add2", label = h5("Additional Outcome #2"), 
+                                                                                             choices = list("Randomized Controlled Trial" = "Randomized Controlled Trial", 
+                                                                                                            "Regression discontinuity" = "Regression discontinuity", 
+                                                                                                            "Differences in differences" = "Differences in differences",
+                                                                                                            "Instrumental variables" = "Instrumental variables",
+                                                                                                            "Synthetic control" = "Synthetic control",
+                                                                                                            "Control site" = "Control site",
+                                                                                                            "Before vs. After" = "Before vs. After",
+                                                                                                            "Enrolled vs. Unenrolled" = "Enrolled vs. Unenrolled",
+                                                                                                            "Other" = "Other"), 
+                                                                                             selected = "Control site")),
+    hr(),
     actionButton(
       inputId = "back_16",
       label = "Back"
@@ -565,9 +583,8 @@ ui <- fluidPage(
       "impact2",
       
       h1("Impact"),
-      h3("Counterfactual"),
-      h4("How was the baseline scenario assessed?"),
-      p("Add table"),
+      
+      
       actionButton(
         inputId = "back_17",
         label = "Back"
@@ -603,8 +620,25 @@ ui <- fluidPage(
         
       h1("Impact"),
       h3("Leakage"),
-      h4("What, if any, is the main source(s) of leakage for each outcome?"),
-      p("Add table"),
+      h4("What, if any, is the main source of leakage for each outcome?"),
+      
+      textInput("leak_main", label = h5("Main Outcome"), value = "Enter text..."),
+      conditionalPanel(condition = "input.outcome_indicator1 != 'Enter text...' ", textInput("leak_add1", label = h5("Additional Outcome #1"), value = "Enter text...")),
+      conditionalPanel(condition = "input.outcome_indicator2 != 'Enter text...' ", textInput("leak_add2", label = h5("Additional Outcome #2"), value = "Enter text...")),
+      hr(),
+      
+      h4("What is the speculated intensity of each source of leakage?"),
+      
+      conditionalPanel(condition = "input.leak_main != 'Enter text...' ", selectInput("leak_main_src", label = h5("Main Outcome"), 
+                                                                                      choices = list("Low" = "Low", "Medium" = "Medium", "High" = "High"), 
+                                                                                      selected = "Medium")),
+      conditionalPanel(condition = "input.leak_add1 != 'Enter text...' ", selectInput("leak_add1_src", label = h5("Additional Outcome #1"), 
+                                                                                      choices = list("Low" = "Low", "Medium" = "Medium", "High" = "High"), 
+                                                                                      selected = "Medium")),
+      conditionalPanel(condition = "input.leak_add2 != 'Enter text...' ", selectInput("leak_add2_src", label = h5("Additional Outcome #2"), 
+                                                                                      choices = list("Low" = "Low", "Medium" = "Medium", "High" = "High"), 
+                                                                                      selected = "Medium")),
+
       actionButton(
         inputId = "back_19",
         label = "Back"
@@ -622,8 +656,7 @@ ui <- fluidPage(
       
       h1("Impact"),
       h3("Leakage"),
-      h4("What is the speculated intensity of each source of leakage?"),
-      p("Add table"),
+      
       actionButton(
         inputId = "back_20",
         label = "Back"
@@ -641,8 +674,24 @@ ui <- fluidPage(
       
       h1("Impact"),
       h3("Attribution"),
-      h4("How much of the outcomes was caused by the contribution of other organizations or people?"),
-      p("Add table"),
+      
+      h3(textOutput("pv_main")),
+      sliderInput("slider1", label = h4("How much of the Main Outcomes was caused by the contribution of other organizations or people?"), min = 0, 
+                  max = 100, value = 50),
+      h3(textOutput("pv_main_at")),
+      br(),
+      
+      conditionalPanel(condition = "input.outcome_indicator1 != 'Enter text...' ", h3(textOutput("pv_add1"))),
+      conditionalPanel(condition = "input.outcome_indicator1 != 'Enter text...' ", sliderInput("slider2", label = h4("How much of the Additional Outcomes #1 was caused by the contribution of other organizations or people?"), min = 0, 
+                                                                                               max = 100, value = 50)),
+      conditionalPanel(condition = "input.outcome_indicator1 != 'Enter text...' ", h3(textOutput("pv_add1_at"))),
+      br(),
+      conditionalPanel(condition = "input.outcome_indicator2 != 'Enter text...' ", h3(textOutput("pv_add2"))),
+      conditionalPanel(condition = "input.outcome_indicator2 != 'Enter text...' ", sliderInput("slider3", label = h4("How much of the Additional Outcomes #2 was caused by the contribution of other organizations or people?"), min = 0, 
+                                                                                               max = 100, value = 50)),
+      conditionalPanel(condition = "input.outcome_indicator2 != 'Enter text...' ", h3(textOutput("pv_add2_at"))),
+      br(),
+      br(),
       actionButton(
         inputId = "back_21",
         label = "Back"
@@ -659,17 +708,28 @@ ui <- fluidPage(
       "results",
       
     h1("Results"),
-    h4("For every $1 invested you get: Outcome 1 + Outcome 2 + …"),
-    h4("ROI = Outcome 1 + Outcome 2 + … : $1"),
-    p("Features of the analysis:
-    - Costs: Direct/Indirect
-    - Outcomes: 
-        Intended/Unintended
-        Future estimates (average time considered)
-       Monetary valuation
-    - Discount Rate
-    - Counterfactual: Causal Inference
-    - Leakage: Source/Intensity"),
+    #h3(textOutput("pv_inputs")),
+    #h3(textOutput("roi_main")),
+    h3("For every $1 invested you get:"),
+    h4(textOutput("roi_main_r")),
+    conditionalPanel(condition = "input.outcome_indicator1 != 'Enter text...' ", h4(textOutput("roi_add1_r"))),
+    conditionalPanel(condition = "input.outcome_indicator2 != 'Enter text...' ", h4(textOutput("roi_add2_r"))),
+    hr(),
+    h4(htmlOutput("roi_added")),
+    hr(),
+    h4("Features of the analysis:"),
+    p(textOutput("cost_considered")),
+    p(textOutput("out_considered")),
+    p(textOutput("dr_considered")),
+    p(htmlOutput("ci")),
+    conditionalPanel(condition = "input.leak_main != 'Enter text...' ", p(textOutput("leakage_main"))),
+    conditionalPanel(condition = "input.leak_add1 != 'Enter text...' ", p(textOutput("leakage_add1"))),
+    conditionalPanel(condition = "input.leak_add2 != 'Enter text...' ", p(textOutput("leakage_add2"))),
+    
+    p("(Outcomes: 
+            Future estimates (average time considered)
+            Monetary valuation"),
+    hr(),
     actionButton(
       inputId = "back_22",
       label = "Back"
@@ -698,15 +758,56 @@ ui <- fluidPage(
 server <- function(input, output, session) {
   
   
+  output$cost_considered <- renderText({
+   paste("Costs considered:", input$costs) 
+  })
+  
+  output$out_considered <- renderText({
+    paste("Outcomes considered:", input$outcomes_opt) 
+  })
+  
+  output$dr_considered <- renderText({
+    paste("Discount rate:", input$dr, "%") 
+  })
+  
+  output$ci <- renderUI({
+    str1 <- paste(input$ci_main)
+    str2 <- paste(input$ci_add1)
+    str3 <- paste(input$ci_add2)
+    HTML(
+      if (input$outcome_indicator2!="Enter text...") {
+        paste("Causal inference methodology:", str1, ",", str2, ",", str3)
+      } else if (input$outcome_indicator1!="Enter text..." ) {
+        paste("Causal inference methodology:",str1, ",", str2)
+      } else
+        paste("Causal inference methodology:", str1)
+    )
+  })
+  
+  output$leakage_main <- renderText({
+    paste("Main Outcome leakage:", input$leak_main, "(", input$leak_main_src, ")")
+    
+    })
+  
+  output$leakage_add1 <- renderText({
+    paste("Additional Outcome #1 leakage:", input$leak_add1, "(", input$leak_add1_src, ")")
+  })
+  
+  output$leakage_add2 <- renderText({
+    paste("Additional Outcome #2 leakage:",input$leak_add2, "(", input$leak_add2_src, ")")
+  })
+  
+  
+  
   ##
   
   result0 <- eventReactive(input$next_4 , {
     foo<-data.frame(matrix(ncol=3, nrow=10))
-    colnames(foo)<-c('Resource', 'a', 'Year')
+    colnames(foo)<-c('Year', 'Input', 'a')
     foo$a<-as.numeric(NA)
-    foo$Year<-as.numeric(NA)
-    foo$Resource<-as.character(NA) 
-    colnames(foo)[2] <- "Financial Value"
+    foo$Year<-format(as.Date(NA, format="%Y/%m/%Yd"),"%Y")
+    foo$Input<-as.character(NA) 
+    colnames(foo)[3] <- "Value ($)"
     return(foo)
   })
   
@@ -835,7 +936,7 @@ server <- function(input, output, session) {
   })
   
   observeEvent(input$save_cf_main, 
-               write.csv(hot_to_r(input$table4), file = "save_cf_main.csv",row.names = FALSE))
+               write.csv(hot_to_r(input$table4), file = "cf_main.csv",row.names = FALSE))
   
   
   
@@ -850,6 +951,9 @@ server <- function(input, output, session) {
     rhandsontable(result5())
   })
   
+  observeEvent(input$save_cf_add1, 
+               write.csv(hot_to_r(input$table5), file = "cf_add1.csv",row.names = FALSE))
+  
   
   result6 <- eventReactive(input$save_add_out2 , {
     foo<-read.csv("add_outcome2.csv")
@@ -861,9 +965,195 @@ server <- function(input, output, session) {
   output$table6 <- renderRHandsontable({
     rhandsontable(result6())
   })
+  
+  observeEvent(input$save_cf_add2, 
+               write.csv(hot_to_r(input$table6), file = "cf_add2.csv",row.names = FALSE))
+  
   ##
+
+  
+  result7 <- eventReactive(input$next_16 , {
+    foo<-read.csv("cf_main.csv")
+    colnames(foo)<-c('year', 'indicator', 'units', 'baseline')
+    df<-read.csv("inputs.csv")
+    df <- na.omit(df)
+    yr <- min(df$Year)
+    dr<-input$dr/100
+    foo$dr<- dr
+    foo$period<- foo$year-yr
+    foo$benefit <- foo$indicator-foo$baseline
+    foo$disc_benefit <- foo$benefit/(1+dr)^foo$period
+    pv<- sum(foo$disc_benefit)
+    return(pv)
+  })
+  
+  output$pv_main <- renderText({
+    result7()
+    })
+  output$value <- renderPrint({ 
+    input$slider1 
+    })
+  
+  result8 <- eventReactive(input$slider1, {
+    r <- result7()
+    i <-input$slider1
+    at <- r*(100-i)/100
+    return(at)
+    }) 
+    
+    output$pv_main_at <- renderText({
+      result8()
+    })
   
   
+  ##
+    result7_add1 <- eventReactive(input$next_16 , {
+      foo<-read.csv("cf_add1.csv")
+      colnames(foo)<-c('year', 'indicator', 'units', 'baseline')
+      df<-read.csv("inputs.csv")
+      df <- na.omit(df)
+      yr <- min(df$Year)
+      dr<-input$dr/100
+      foo$dr<- dr
+      foo$period<- foo$year-yr
+      foo$benefit <- foo$indicator-foo$baseline
+      foo$disc_benefit <- foo$benefit/(1+dr)^foo$period
+      pv<- sum(foo$disc_benefit)
+      return(pv)
+    })
+    
+    output$pv_add1 <- renderText({
+      result7_add1()
+    })
+    #output$value <- renderPrint({ 
+      #input$slider2 
+    #})
+    
+    result8_add1 <- eventReactive(input$slider2, {
+      r <- result7_add1()
+      i <-input$slider2
+      at <- r*(100-i)/100
+      return(at)
+    }) 
+    
+    output$pv_add1_at <- renderText({
+      result8_add1()
+    })
+    
+  ##
+    
+    result7_add2 <- eventReactive(input$next_16 , {
+      foo<-read.csv("cf_add2.csv")
+      colnames(foo)<-c('year', 'indicator', 'units', 'baseline')
+      df<-read.csv("inputs.csv")
+      df <- na.omit(df)
+      yr <- min(df$Year)
+      dr<-input$dr/100
+      foo$dr<- dr
+      foo$period<- foo$year-yr
+      foo$benefit <- foo$indicator-foo$baseline
+      foo$disc_benefit <- foo$benefit/(1+dr)^foo$period
+      pv<- sum(foo$disc_benefit)
+      return(pv)
+    })
+    
+    output$pv_add2 <- renderText({
+      result7_add2()
+    })
+    
+    #output$value <- renderPrint({ 
+      #input$slider3 
+    #})
+    
+    result8_add2 <- eventReactive(input$slider3, {
+      r <- result7_add2()
+      i <-input$slider3
+      at <- r*(100-i)/100
+      return(at)
+    }) 
+    
+    output$pv_add2_at <- renderText({
+      result8_add2()
+    }) 
+    
+    
+    
+    
+    
+    
+    
+    
+  ##
+    
+    pv_inputs <- eventReactive(input$next_21 , {
+      foo<-read.csv("inputs.csv")
+      foo <- na.omit(foo)
+      colnames(foo)<-c('year', 'input', 'value')
+      yr <- min(foo$year)
+      dr <-input$dr/100
+      foo$dr <- dr
+      foo$period<- foo$year-yr
+      foo$disc_value <- foo$value/(1+dr)^foo$period
+      pv<- sum(foo$disc_value)
+      return(pv)
+    })  
+    
+    output$pv_inputs <- renderText({
+      pv_inputs()
+    })
+    
+    roi_main <- eventReactive(input$slider1, {
+      pv_main <- result8()
+      pv_input <- pv_inputs()
+      roi <- pv_main/pv_input
+      return(roi)
+    }) 
+    
+    roi_add1 <- eventReactive(input$slider2, {
+      pv_add1 <- result8_add1()
+      pv_input <- pv_inputs()
+      roi <- pv_add1/pv_input
+      return(roi)
+    }) 
+    
+    roi_add2 <- eventReactive(input$slider3, {
+      pv_add2 <- result8_add2()
+      pv_input <- pv_inputs()
+      roi <- pv_add2/pv_input
+      return(roi)
+    }) 
+    
+   output$roi_main_r <- renderText({
+     paste("-", input$outcome_indicator,":", round(roi_main(), 2), input$units )
+    })
+   
+   output$roi_add1_r <- renderText({
+     paste("-", input$outcome_indicator1,":", round(roi_add1(), 2), input$units1 )
+   })
+   
+   output$roi_add2_r <- renderText({
+     paste("-", input$outcome_indicator2,":", round(roi_add2(), 2), input$units2 )
+   })
+    
+    output$roi_added <- renderUI({
+      str1 <- paste(round(roi_main(), 2), input$units, "(", input$outcome_indicator, ")")
+      str2 <- paste(round(roi_add1(), 2), input$units1, "(", input$outcome_indicator1, ")")
+      str3 <- paste(round(roi_add2(), 2), input$units2, "(", input$outcome_indicator2, ")")
+      HTML(
+        if (input$outcome_indicator2!="Enter text...") {
+          paste("ROI =", str1, "+", str2, "+", str3, ": 1$")
+        } else if (input$outcome_indicator1!="Enter text..." ) {
+          paste("ROI =",str1, "+", str2, ": 1$")
+        } else
+          paste("ROI =", str1, ": 1$")
+        )
+    })
+    
+    
+    
+
+    
+  ##
   
   observeEvent(input$continue,{
     message("continue button was press")
